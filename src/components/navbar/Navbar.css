@@ -1,3 +1,8 @@
 .my-navbar {
     height: 60px;
 }
+
+a {
+    color: #ccc;
+    text-decoration: none;
+}

@@ -38,7 +38,7 @@ export default () => {
         if (answers.length != questions.length) return;
 
         const createQuestionElements = () => {
-            return questions.map((question, index) => {
+            return questions.map((question) => {
                 return (
                     <div key={question.id} className="d-flex flex-column mb-2 border-bottom p-3">
                         <span className="lead mb-2">{question.id}. {decode(question.question)}</span>

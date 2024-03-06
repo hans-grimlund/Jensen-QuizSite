@@ -22,8 +22,6 @@ export const getQuiz = async (difficulty: string, category: number) => {
                 return quizQuestion;
             });
 
-            console.log(quizQuestions);
-
             return quizQuestions;
         }
     } catch (error) {

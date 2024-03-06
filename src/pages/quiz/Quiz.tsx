@@ -13,6 +13,7 @@ export default () => {
     const [questionElements, setQuestionElements] = useState<JSX.Element[]>([]);
     const [loading, setLoading] = useState(true);
     const [answers, setAnswers] = useState<{ questionId: number, answer: string}[]>([])
+    const [rightAnswers, setRightAnswers] = useState(0);
 
     const fetchQuestions = async () => {
         try {
@@ -33,24 +34,26 @@ export default () => {
 
     const submit = (e: FormEvent) => {
         e.preventDefault();
-        console.log(answers);
         
         if (answers.length != questions.length) return;
 
         const createQuestionElements = () => {
             return questions.map((question) => {
+                if (answers.some(a => a.questionId == question.id && a.answer == question.correct_answer))
+                    setRightAnswers(prevNumber => prevNumber +1);
+
                 return (
                     <div key={question.id} className="d-flex flex-column mb-2 border-bottom p-3">
                         <span className="lead mb-2">{question.id}. {decode(question.question)}</span>
                         <div key={1} className="form-check">
-                            <input className="form-check-input" type="radio" readOnly checked={answers.filter(a => a.questionId == question.id && a.answer == question.correct_answer).length == 1} />
+                            <input className="form-check-input" type="radio" readOnly checked={answers.some(a => a.questionId == question.id && a.answer == question.correct_answer)} />
                             <label className="form-check-label text-success" htmlFor="{s'anwer' + index2 + 2}">{decode(question.correct_answer)}</label>
                         </div>
                         {question.incorrect_answers.map((answer, answerIndex) => { 
                             const textColor = (answers.filter(a => a.questionId == question.id && a.answer == answer).length == 1) ? ' text-danger' : null;
                             return (
                                 <div key={answerIndex} className="form-check">
-                                    <input className="form-check-input" type="radio" readOnly checked={answers.filter(a => a.questionId == question.id && a.answer == answer).length == 1} />
+                                    <input className="form-check-input" type="radio" readOnly checked={answers.some(a => a.questionId == question.id && a.answer == answer)} />
                                     <label className={'form-check-label' + textColor}>{decode(answer)}</label>
                                 </div>
                             )
@@ -92,6 +95,10 @@ export default () => {
 
     }, [questions])
 
+    const rightAnswersElement = (
+        <span className="mb-3">You got {rightAnswers} questions right</span>
+    )
+
     if (loading) return <Loading />
 
     if (questions.length < 1) return <NotFound />
@@ -100,7 +107,8 @@ export default () => {
         <div className="col-12 d-flex justify-content-center mt-4">
             <form onSubmit={(e) => submit(e)} className="col-11 col-md-8 col-lg-6 mb-4 d-flex flex-column bg-dark rounded-3">
                 {questionElements}
-                <div className="col-12 p-3 d-flex justify-content-center">
+                <div className="col-12 p-3 d-flex flex-column align-items-center">
+                    {rightAnswers != 0 ? rightAnswersElement : null}
                     <button className="btn btn-success">Submit</button>
                 </div>
             </form>
